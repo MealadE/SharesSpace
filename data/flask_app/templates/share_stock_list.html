@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Share Stock List{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+    <h2>Share Stock List</h2>
+    <h3>Stock List: {{ stock_list.slname }}</h3>
+    
+    <!-- Display users with whom the stock list has been shared -->
+    <h4>Shared With:</h4>
+    {% if shared_friends %}
+        <ul>
+            {% for friend in shared_friends %}
+                <li>{{ friend.full_name }} ({{ friend.username }})</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No users have been shared with yet.</p>
+    {% endif %}
+
+    <!-- Form to share with new friends -->
+    <form method="post" action="{{ url_for('share_stock_list', stock_list_id=stock_list.slid) }}">
+        <div class="form-group">
+            <label for="friend">Select a Friend to Share With:</label>
+            <select name="friend_username" class="form-control" id="friend">
+                {% for friend in friends %}
+                    <option value="{{ friend.username }}">{{ friend.full_name }} ({{ friend.username }})</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Share</button>
+    </form>
+</div>
+{% endblock %}

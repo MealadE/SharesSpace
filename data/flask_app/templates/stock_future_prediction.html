@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Future Price Prediction for {{ stock.name }}</h2>
+
+    <form method="post" action="{{ url_for('stock_future_prediction', symbol=stock.symbol) }}">
+        <div>
+            <label for="prediction_interval">Select Interval:</label>
+            <select name="prediction_interval" id="prediction_interval">
+                <option value="7">1 Week</option>
+                <option value="30">1 Month</option>
+                <option value="90">1 Quarter</option>
+                <option value="365">1 Year</option>
+                <option value="1825">5 Years</option>
+            </select>
+        </div>
+        <div>
+            <button type="submit">View Prediction</button>
+        </div>
+    </form>
+
+    {% if future_data %}
+        <div class="chart-container">
+            <canvas id="future-price-chart"></canvas>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            const futureData = {{ future_data|tojson }};
+            const ctx = document.getElementById('future-price-chart').getContext('2d');
+
+            // Extract data for the chart
+            const labels = futureData.map(data => data.date);
+            const prices = futureData.map(data => data.price);
+
+            const chartData = {
+                labels: labels,
+                datasets: [{
+                    label: 'Predicted Price',
+                    data: prices,
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderWidth: 1
+                }]
+            };
+
+            new Chart(ctx, {
+                type: 'line',
+                data: chartData,
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            beginAtZero: false
+                        },
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        </script>
+    {% endif %}
+{% endblock %}

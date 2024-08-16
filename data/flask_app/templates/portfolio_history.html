@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Portfolio History{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+    <h2>Portfolio History: {{ portfolio.pname }}</h2>
+
+    <!-- Cash Transactions -->
+    <h3>Cash Transactions</h3>
+    {% if cash_transactions %}
+        <div class="stock-history-table-container">
+            <table class="stock-history-table">
+                <thead>
+                    <tr>
+                        <th>Action</th>
+                        <th>Amount</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in cash_transactions %}
+                        <tr>
+                            <td>{{ record.action_type }}</td>
+                            <td>{{ record.amount }}</td>
+                            <td>{{ record.timestamp }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>No cash transactions found.</p>
+    {% endif %}
+
+    <!-- Transfers -->
+    <h3>Transfers</h3>
+    {% if transfers %}
+        <div class="stock-history-table-container">
+            <table class="stock-history-table">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Destination Portfolio</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in transfers %}
+                        <tr>
+                            <td>{{ 'Outgoing' if record.pid == portfolio.pid else 'Incoming' }}</td>
+                            <td>{{ record.amount }}</td>
+                            <td>
+                                {% if record.pid == portfolio.pid %}
+                                    {{ record.destination_portfolio.pname }}
+                                {% else %}
+                                    {{ record.portfolio.pname }}
+                                {% endif %}
+                            </td>
+                            <td>{{ record.timestamp }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>No transfers found.</p>
+    {% endif %}
+
+    <!-- Stock Transactions -->
+    <h3>Stock Transactions</h3>
+    {% if stock_transactions %}
+        <div class="stock-history-table-container">
+            <table class="stock-history-table">
+                <thead>
+                    <tr>
+                        <th>Action</th>
+                        <th>Stock Symbol</th>
+                        <th>Volume</th>
+                        <th>Amount</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in stock_transactions %}
+                        <tr>
+                            <td>{{ record.action_type }}</td>
+                            <td>{{ record.symbol }}</td>
+                            <td>{{ record.volume }}</td>
+                            <td>{{ record.amount }}</td>
+                            <td>{{ record.timestamp }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>No stock transactions found.</p>
+    {% endif %}
+
+    <div class="button-container">
+        <a href="{{ url_for('portfolios') }}" class="btn">Back to Portfolios</a>
+    </div>
+</div>
+{% endblock %}

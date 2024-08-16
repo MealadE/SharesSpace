@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Friends</h2>
+
+    <!-- Form to send a friend request -->
+    <h3>Send Friend Request</h3>
+    <form method="POST" action="{{ url_for('friends') }}">
+        {{ form.hidden_tag() }}
+        {{ form.friend_username.label }} {{ form.friend_username() }}
+        <input type="submit" value="Send Request" class="btn">
+    </form>
+
+    <h3>Sent Requests</h3>
+    <ul>
+        {% for request in sent_requests %}
+            <li>
+                Request sent to: {{ request.user_id2 }}
+                <!-- Optionally add cancel request functionality here -->
+            </li>
+        {% endfor %}
+    </ul>
+
+    <h3>Received Requests</h3>
+    <ul>
+        {% for request in received_requests %}
+            <li>
+                Request from: {{ request.user_id1 }}
+                <form method="POST" action="{{ url_for('respond_to_request') }}" style="display:inline;">
+                    <input type="hidden" name="request_id1" value="{{ request.user_id1 }}">
+                    <input type="hidden" name="request_id2" value="{{ request.user_id2 }}">
+                    <button type="submit" name="action" value="accept" class="btn">Accept</button>
+                    <button type="submit" name="action" value="decline" class="btn">Decline</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <h3>Friends List</h3>
+    <table class="friends-table">
+        <thead>
+            <tr>
+                <th>Friend</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for friend in friends_list %}
+                <tr>
+                    <td>{{ friend }}</td>
+                    <td>
+                        <form method="POST" action="{{ url_for('remove_friend', friend_username=friend) }}" style="display:inline;">
+                            <button type="submit" class="btn btn-danger">Remove Friend</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Performance Graph for {{ stock.name }}</h2>
+
+<div class="filter-container">
+    <form id="filter-form">
+        <label for="filter">Select Time Range:</label>
+        <select name="filter" id="filter" onchange="updateChart()">
+            <option value="All" {% if selected_filter == 'All' %}selected{% endif %}>All Time</option>
+            <option value="last_week" {% if selected_filter == 'last_week' %}selected{% endif %}>Last Week</option>
+            <option value="last_month" {% if selected_filter == 'last_month' %}selected{% endif %}>Last Month</option>
+            <option value="last_quarter" {% if selected_filter == 'last_quarter' %}selected{% endif %}>Last Quarter</option>
+            <option value="last_year" {% if selected_filter == 'last_year' %}selected{% endif %}>Last Year</option>
+            <option value="last_five_years" {% if selected_filter == 'last_five_years' %}selected{% endif %}>Last Five Years</option>
+            {% for y in years %}
+            <option value="year_{{ y }}" {% if selected_filter == 'year_' ~ y %}selected{% endif %}>Year {{ y }}</option>
+            {% endfor %}
+        </select>
+    </form>
+</div>
+
+<div class="chart-container">
+    <canvas id="stock-performance-chart"></canvas>
+</div>
+
+<p id="no-data-message" style="display:none;">No data available for the selected period.</p>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Initial data from the server
+    const historyData = {{ history_json|tojson }};
+    const ctx = document.getElementById('stock-performance-chart').getContext('2d');
+    let chart;
+
+    function updateChart() {
+        const filter = document.getElementById('filter').value;
+        const now = new Date();
+        let filteredData = historyData;
+
+        // Calculate the start date based on the selected filter
+        let startDate;
+
+        switch (filter) {
+            case 'last_week':
+                startDate = new Date();
+                startDate.setDate(startDate.getDate() - 7);
+                break;
+            case 'last_month':
+                startDate = new Date();
+                startDate.setMonth(startDate.getMonth() - 1);
+                break;
+            case 'last_quarter':
+                startDate = new Date();
+                startDate.setMonth(startDate.getMonth() - 3);
+                break;
+            case 'last_year':
+                startDate = new Date();
+                startDate.setFullYear(startDate.getFullYear() - 1);
+                break;
+            case 'last_five_years':
+                startDate = new Date();
+                startDate.setFullYear(startDate.getFullYear() - 5);
+                break;
+            default:
+                if (filter.startsWith('year_')) {
+                    const year = filter.split('_')[1];
+                    startDate = new Date(`${year}-01-01`);
+                } else {
+                    startDate = null;
+                }
+                break;
+        }
+
+        // Filter the data based on the calculated start date
+        if (startDate) {
+            filteredData = historyData.filter(record => new Date(record.timestamp) >= startDate);
+        }
+
+        // Update the chart
+        const labels = filteredData.map(record => new Date(record.timestamp).toLocaleDateString());
+        const data = {
+            labels: labels,
+            datasets: [{
+                label: 'Close Price',
+                data: filteredData.map(record => record.close),
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderWidth: 1
+            }]
+        };
+
+        // Destroy the previous chart if it exists
+        if (chart) {
+            chart.destroy();
+        }
+
+        chart = new Chart(ctx, {
+            type: 'line',
+            data: data,
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        beginAtZero: false
+                    },
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Display message if no data available
+        const noDataMessage = document.getElementById('no-data-message');
+        if (filteredData.length === 0) {
+            noDataMessage.style.display = 'block';
+        } else {
+            noDataMessage.style.display = 'none';
+        }
+    }
+
+    // Initial chart rendering
+    updateChart();
+</script>
+{% endblock %}

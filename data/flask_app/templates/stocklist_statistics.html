@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Stock List Statistics{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Stock List Statistics</h2>
+
+    <!-- Stock List Details -->
+    <h3>Stock List: {{ stock_list.slname }}</h3>
+
+    <!-- Period Selection Form -->
+    <form method="get" action="{{ url_for('stocklist_statistics', stock_list_id=stock_list.slid) }}">
+        <label for="period">Select Period:</label>
+        <select name="period" id="period">
+            <option value="1w" {% if period == '1w' %}selected{% endif %}>Last Week</option>
+            <option value="1m" {% if period == '1m' %}selected{% endif %}>Last Month</option>
+            <option value="3m" {% if period == '3m' %}selected{% endif %}>Last 3 Months</option>
+            <option value="1y" {% if period == '1y' %}selected{% endif %}>Last Year</option>
+            <option value="5y" {% if period == '5y' %}selected{% endif %}>Last 5 Years</option>
+        </select>
+        <button type="submit">Update</button>
+    </form>
+
+    <!-- Coefficient of Variation and Beta -->
+    <h4>Coefficient of Variation (CV) and Beta for Each Stock</h4>
+    {% if coefficient_of_variation %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Stock Symbol</th>
+                <th>Coefficient of Variation (CV)</th>
+                <th>Beta</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for symbol in coefficient_of_variation %}
+            <tr>
+                <td>{{ symbol }}</td>
+                <td>{{ coefficient_of_variation[symbol]|number_format(4) if coefficient_of_variation[symbol] is not none else 'N/A' }}</td>
+                <td>{{ beta_values[symbol]|number_format(4) if beta_values[symbol] is not none else 'N/A' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No stock data available.</p>
+    {% endif %}
+
+    <!-- Covariance Matrix -->
+    <h4>Covariance Matrix</h4>
+    {% if coefficient_of_variation|length > 1 and covariance_matrix is not none and covariance_matrix.shape and covariance_matrix.shape[0] %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th></th>
+                {% set symbols_list = coefficient_of_variation.keys() | list %}
+                {% for symbol in symbols_list %}
+                <th>{{ symbol }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in range(covariance_matrix.shape[0]) %}
+            <tr>
+                <td>{{ symbols_list[i] }}</td>
+                {% for j in range(covariance_matrix.shape[1]) %}
+                <td>{{ covariance_matrix[i, j]|number_format(4) }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Covariance matrix not available or insufficient data.</p>
+    {% endif %}
+
+    <!-- Correlation Matrix -->
+    <h4>Correlation Matrix</h4>
+    {% if coefficient_of_variation|length > 1 and correlation_matrix is not none and correlation_matrix.shape and correlation_matrix.shape[0] %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th></th>
+                {% set symbols_list = coefficient_of_variation.keys() | list %}
+                {% for symbol in symbols_list %}
+                <th>{{ symbol }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in range(correlation_matrix.shape[0]) %}
+            <tr>
+                <td>{{ symbols_list[i] }}</td>
+                {% for j in range(correlation_matrix.shape[1]) %}
+                <td>{{ correlation_matrix[i, j]|number_format(4) }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Correlation matrix not available or insufficient data.</p>
+    {% endif %}
+</div>
+{% endblock %}

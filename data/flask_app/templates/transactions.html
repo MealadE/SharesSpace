@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}Transactions{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+    <h2>Manage Your Transactions</h2>
+
+    <!-- Transaction Type Selection -->
+    <div class="transaction-tabs">
+        <button class="btn tab-button" onclick="showForm('deposit')">Deposit</button>
+        <button class="btn tab-button" onclick="showForm('withdraw')">Withdraw</button>
+        <button class="btn tab-button" onclick="showForm('transfer')">Transfer</button>
+    </div>
+
+    <!-- Deposit Form -->
+    <div id="deposit-form" class="transaction-form">
+        <h3>Deposit Funds</h3>
+        <form method="post" action="{{ url_for('transactions') }}">
+            <input type="hidden" name="action" value="deposit">
+            <div class="form-group">
+                <label for="from_portfolio">Select Portfolio:</label>
+                <select id="from_portfolio" name="from_portfolio" class="form-control" onchange="updateBalance(this, 'deposit_balance_display')">
+                    {% for portfolio in portfolios %}
+                        <option value="{{ portfolio.pid }}">{{ portfolio.pname }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="deposit_amount">Amount to Deposit:</label>
+                <input type="number" id="deposit_amount" name="amount" class="form-control" min="1" max="10000" required>
+            </div>
+            <div id="deposit_balance_display" class="balance-display">
+                <!-- Balance will be updated by JavaScript -->
+            </div>
+            <input type="submit" value="Deposit" class="btn">
+        </form>
+    </div>
+
+    <!-- Withdraw Form -->
+    <div id="withdraw-form" class="transaction-form" style="display: none;">
+        <h3>Withdraw Funds</h3>
+        <form method="post" action="{{ url_for('transactions') }}">
+            <input type="hidden" name="action" value="withdraw">
+            <div class="form-group">
+                <label for="from_portfolio_withdraw">Select Portfolio:</label>
+                <select id="from_portfolio_withdraw" name="from_portfolio" class="form-control" onchange="updateBalance(this, 'withdraw_balance_display')">
+                    {% for portfolio in portfolios %}
+                        <option value="{{ portfolio.pid }}">{{ portfolio.pname }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="withdraw_amount">Amount to Withdraw:</label>
+                <input type="number" id="withdraw_amount" name="amount" class="form-control" min="1" required>
+            </div>
+            <div id="withdraw_balance_display" class="balance-display">
+                <!-- Balance will be updated by JavaScript -->
+            </div>
+            <input type="submit" value="Withdraw" class="btn">
+        </form>
+    </div>
+
+    <!-- Transfer Form -->
+    <div id="transfer-form" class="transaction-form" style="display: none;">
+        <h3>Transfer Funds</h3>
+        <form method="post" action="{{ url_for('transactions') }}">
+            <input type="hidden" name="action" value="transfer">
+            <div class="form-group">
+                <label for="from_portfolio_transfer">From Portfolio:</label>
+                <select id="from_portfolio_transfer" name="from_portfolio" class="form-control" onchange="updateTransferBalances()">
+                    {% for portfolio in portfolios %}
+                        <option value="{{ portfolio.pid }}">{{ portfolio.pname }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="to_portfolio">To Portfolio:</label>
+                <select id="to_portfolio" name="to_portfolio" class="form-control" onchange="updateTransferBalances()">
+                    {% for portfolio in portfolios %}
+                        <option value="{{ portfolio.pid }}">{{ portfolio.pname }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="transfer_amount">Amount to Transfer:</label>
+                <input type="number" id="transfer_amount" name="amount" class="form-control" min="1" required>
+            </div>
+            <div id="transfer_from_balance_display" class="balance-display">
+                <!-- From balance will be updated by JavaScript -->
+            </div>
+            <div id="transfer_to_balance_display" class="balance-display">
+                <!-- To balance will be updated by JavaScript -->
+            </div>
+            <input type="submit" value="Transfer" class="btn">
+        </form>
+    </div>
+</div>
+
+<script>
+    function showForm(formType) {
+        document.querySelectorAll('.transaction-form').forEach(function(form) {
+            form.style.display = 'none';
+        });
+        document.getElementById(formType + '-form').style.display = 'block';
+    }
+
+    function updateBalance(selectElement, balanceDisplayId) {
+        const selectedPortfolioId = selectElement.value;
+        const portfoliosCash = {{ portfolios_cash|tojson|safe }};
+        const balanceDisplay = document.getElementById(balanceDisplayId);
+
+        if (portfoliosCash[selectedPortfolioId]) {
+            balanceDisplay.textContent = `Current Balance: $${portfoliosCash[selectedPortfolioId].Balance}`;
+        } else {
+            balanceDisplay.textContent = 'Current Balance: $0';
+        }
+    }
+
+    function updateTransferBalances() {
+        const fromPortfolioSelect = document.getElementById('from_portfolio_transfer');
+        const toPortfolioSelect = document.getElementById('to_portfolio');
+        const fromBalanceDisplay = document.getElementById('transfer_from_balance_display');
+        const toBalanceDisplay = document.getElementById('transfer_to_balance_display');
+
+        const portfoliosCash = {{ portfolios_cash|tojson|safe }};
+        const fromPortfolioId = fromPortfolioSelect.value;
+        const toPortfolioId = toPortfolioSelect.value;
+
+        if (portfoliosCash[fromPortfolioId]) {
+            fromBalanceDisplay.textContent = `From Portfolio Balance: $${portfoliosCash[fromPortfolioId].Balance}`;
+        } else {
+            fromBalanceDisplay.textContent = 'From Portfolio Balance: $0';
+        }
+
+        if (portfoliosCash[toPortfolioId]) {
+            toBalanceDisplay.textContent = `To Portfolio Balance: $${portfoliosCash[toPortfolioId].Balance}`;
+        } else {
+            toBalanceDisplay.textContent = 'To Portfolio Balance: $0';
+        }
+
+        // Prevent selecting the same portfolio for transfer
+        if (fromPortfolioId === toPortfolioId) {
+            toPortfolioSelect.setCustomValidity('Cannot select the same portfolio for both accounts.');
+        } else {
+            toPortfolioSelect.setCustomValidity('');
+        }
+    }
+
+    // Initialize balance display
+    updateBalance(document.getElementById('from_portfolio'), 'deposit_balance_display');
+    updateBalance(document.getElementById('from_portfolio_withdraw'), 'withdraw_balance_display');
+    updateTransferBalances(); // Initialize transfer balances
+</script>
+{% endblock %}

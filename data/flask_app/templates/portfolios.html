@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Portfolios{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+    <h2>Your Portfolios</h2>
+    <form method="get" action="{{ url_for('portfolios') }}">
+        <select name="portfolio_id" class="form-control" onchange="this.form.submit()">
+            <option value="">Select a Portfolio</option>
+            {% for portfolio in portfolios %}
+                <option value="{{ portfolio.pid }}" {% if portfolio.pid == selected_portfolio.pid %}selected{% endif %}>
+                    {{ portfolio.pname }}
+                </option>
+            {% endfor %}
+        </select>
+    </form>
+    <div>
+        {% if selected_portfolio %}
+            <h3>Portfolio Details</h3>
+            <p>Name: {{ selected_portfolio.pname }}</p>
+            <p><strong>Portfolio Value:</strong> ${{ portfolio_value|number_format(2) }}</p>
+            {% if cash_account %}
+                <p>Balance: ${{ cash_account.balance|number_format(2) }}</p>
+            {% else %}
+                <p>No cash account found for this portfolio.</p>
+            {% endif %}
+            
+            <!-- Display Stock Holdings -->
+            <h4>Stocks Held</h4>
+            {% if stock_holdings %}
+                <div class="stock-history-table-container">
+                    <table class="stock-history-table">
+                        <thead>
+                            <tr>
+                                <th>Stock Name</th>
+                                <th>Stock Symbol</th>
+                                <th>Amount</th>
+                                <th>View History</th>
+                                <th>View Prediction</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for holding in stock_holdings %}
+                                <tr>
+                                    <td>{{ holding.name }}</td>
+                                    <td>{{ holding.symbol }}</td>
+                                    <td>{{ holding.volume }}</td>
+                                    <td>
+                                        <a href="{{ url_for('view_stock_history', symbol=holding.symbol) }}" class="btn btn-info">View History</a>
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('stock_future_prediction_form') }}" class="btn btn-warning" onclick="event.preventDefault(); document.getElementById('future-prediction-form-{{ holding.symbol }}').submit();">View Prediction</a>
+                                        <form id="future-prediction-form-{{ holding.symbol }}" method="post" action="{{ url_for('stock_future_prediction_form') }}" style="display: none;">
+                                            <input type="hidden" name="future_stock_symbol" value="{{ holding.symbol }}">
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p>No stocks held in this portfolio.</p>
+            {% endif %}
+            
+            <!-- Add Buy/Sell Stock buttons -->
+            <div class="button-container">
+                <a href="{{ url_for('buy_stock', portfolio_id=selected_portfolio.pid) }}" class="btn">Buy Stock</a>
+                <a href="{{ url_for('sell_stock', portfolio_id=selected_portfolio.pid) }}" class="btn">Sell Stock</a>
+                <a href="{{ url_for('portfolio_statistics', portfolio_id=selected_portfolio.pid) }}" class="btn btn-primary">Analyze Portfolio</a>
+            </div>
+            
+            <!-- Add Portfolio History button -->
+            <div class="button-container">
+                <a href="{{ url_for('portfolio_history', portfolio_id=selected_portfolio.pid) }}" class="btn">View Portfolio History</a>
+            </div>
+        {% else %}
+            <p>No portfolio selected.</p>
+        {% endif %}
+    </div>
+    <div class="button-container">
+        <a href="{{ url_for('create_portfolio') }}" class="btn">Create New Portfolio</a>
+    </div>
+</div>
+{% endblock %}

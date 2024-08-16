@@ -1,0 +1,31 @@
+<!-- base.html -->
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Stock Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Stock Management System</h1>
+    </header>
+    {% if session.get('username') %}
+    <nav>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a> 
+        <a href="{{ url_for('portfolios') }}">Portfolios</a>
+        <a href="{{ url_for('stocklists') }}">Stock Lists</a>
+        <a href="{{ url_for('stocks') }}">Stocks</a>
+        <a href="{{ url_for('stock_history') }}">Stock History</a>
+        <a href="{{ url_for('transactions') }}">Transactions</a>
+        <a href="{{ url_for('friends') }}">Friends</a> <!-- New link -->
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </nav>
+    {% endif %}
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+        <p>&copy; 2024 Stock Management System</p>
+    </footer>
+</body>
+</html>

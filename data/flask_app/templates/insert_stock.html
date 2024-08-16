@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Insert Stock{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+    <h2>Insert Stock into Stock List</h2>
+    <form method="post" action="{{ url_for('insert_stock', stock_list_id=stock_list_id) }}">
+        <div class="form-group">
+            <label for="stock_symbol">Stock Symbol:</label>
+            <input type="text" name="stock_symbol" id="stock_symbol" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="volume">Volume:</label>
+            <input type="number" name="volume" id="volume" class="form-control" required>
+        </div>
+        <button type="submit" class="btn">Insert Stock</button>
+    </form>
+    <div class="button-container">
+        <a href="{{ url_for('stocklists') }}" class="btn">Back to Stock Lists</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Sell Stock{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+    <h2>Sell Stock from Portfolio: {{ portfolio.pname }}</h2>
+    <form method="post" action="{{ url_for('sell_stock', portfolio_id=portfolio.pid) }}" id="sell-form">
+        <div class="form-group">
+            <label for="sell_stock_symbol">Stock Symbol:</label>
+            <select name="sell_stock_symbol" id="sell_stock_symbol" class="form-control" required>
+                <option value="">Select a Stock</option>
+                {% for symbol, quantity in holdings.items() %}
+                    <option value="{{ symbol }}" data-quantity="{{ quantity }}">{{ symbol }} - {{ quantity }} shares</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="amount">Amount to Sell:</label>
+            <input type="number" name="amount" id="amount" class="form-control" min="1" required>
+        </div>
+        <div class="form-group">
+            <p>Available Shares: <span id="available_shares">0</span></p>
+            <p>Current Price: <span id="current_price">$0.00</span></p>
+            <p>Total Amount: <span id="total_amount">$0.00</span></p>
+        </div>
+        <button type="submit" class="btn btn-primary">Sell Stock</button>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const stockSymbolSelect = document.getElementById('sell_stock_symbol');
+    const amountInput = document.getElementById('amount');
+    const currentPriceSpan = document.getElementById('current_price');
+    const totalAmountSpan = document.getElementById('total_amount');
+    const availableSharesSpan = document.getElementById('available_shares');
+
+    function updatePriceAndAmount() {
+        const symbol = stockSymbolSelect.value;
+        const amount = parseFloat(amountInput.value);
+        const availableShares = stockSymbolSelect.options[stockSymbolSelect.selectedIndex].dataset.quantity;
+        
+        // Update available shares
+        availableSharesSpan.textContent = availableShares;
+
+        if (symbol) {
+            // Get current stock price from server
+            fetch(`/stock_price/${symbol}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.price) {
+                        const price = parseFloat(data.price);
+                        currentPriceSpan.textContent = `$${price.toFixed(2)}`;
+                        if (!isNaN(amount) && amount > 0) {
+                            const total = price * amount;
+                            totalAmountSpan.textContent = `$${total.toFixed(2)}`;
+                        } else {
+                            totalAmountSpan.textContent = `$0.00`;
+                        }
+                    } else {
+                        currentPriceSpan.textContent = 'N/A';
+                        totalAmountSpan.textContent = `$0.00`;
+                    }
+                })
+                .catch(() => {
+                    currentPriceSpan.textContent = 'Error';
+                    totalAmountSpan.textContent = `$0.00`;
+                });
+        } else {
+            currentPriceSpan.textContent = `$0.00`;
+            totalAmountSpan.textContent = `$0.00`;
+        }
+    }
+
+    stockSymbolSelect.addEventListener('change', updatePriceAndAmount);
+    amountInput.addEventListener('input', updatePriceAndAmount);
+});
+</script>
+{% endblock %}

@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Stock History{% endblock %}
+
+{% block content %}
+<h2>Stock History for {{ stock.name }}</h2>
+
+<div class="filter-container">
+    <form id="filter-form">
+        <label for="filter">Select Time Range:</label>
+        <select name="filter" id="filter" onchange="filterByRange()">
+            <option value="All" {% if selected_filter == 'All' %}selected{% endif %}>All Time</option>
+            <option value="last_week" {% if selected_filter == 'last_week' %}selected{% endif %}>Last Week</option>
+            <option value="last_month" {% if selected_filter == 'last_month' %}selected{% endif %}>Last Month</option>
+            <option value="last_quarter" {% if selected_filter == 'last_quarter' %}selected{% endif %}>Last Quarter</option>
+            <option value="last_year" {% if selected_filter == 'last_year' %}selected{% endif %}>Last Year</option>
+            <option value="last_five_years" {% if selected_filter == 'last_five_years' %}selected{% endif %}>Last Five Years</option>
+            {% for y in years %}
+            <option value="year_{{ y }}" {% if selected_filter == 'year_' ~ y %}selected{% endif %}>Year {{ y }}</option>
+            {% endfor %}
+        </select>
+    </form>
+</div>
+
+<!-- Add the button here -->
+<div class="button-container">
+    <a href="{{ url_for('stock_performance_graph', symbol=stock.symbol) }}" class="btn">View Performance Graph</a>
+</div>
+
+<div class="stock-history-table-container">
+    <table id="stock-history-table" class="stock-history-table">
+        <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th>Open</th>
+                <th>High</th>
+                <th>Low</th>
+                <th>Close</th>
+                <th>Volume</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rows will be dynamically populated by JavaScript -->
+        </tbody>
+    </table>
+    <p id="no-data-message" style="display:none;">No information is available for the selected period of time.</p>
+</div>
+
+<script>
+    // Initial data from the server
+    const historyData = {{ history_json|tojson }};
+    const tableBody = document.querySelector('#stock-history-table tbody');
+    const filterSelect = document.getElementById('filter');
+    const noDataMessage = document.getElementById('no-data-message');
+
+    function filterByRange() {
+        const selectedFilter = filterSelect.value;
+        const now = new Date();
+        let filteredData = historyData;
+        
+        // Calculate the start date based on the selected filter
+        let startDate;
+
+        switch (selectedFilter) {
+            case 'last_week':
+                startDate = new Date();
+                startDate.setDate(startDate.getDate() - 7);
+                break;
+            case 'last_month':
+                startDate = new Date();
+                startDate.setMonth(startDate.getMonth() - 1);
+                break;
+            case 'last_quarter':
+                startDate = new Date();
+                startDate.setMonth(startDate.getMonth() - 3);
+                break;
+            case 'last_year':
+                startDate = new Date();
+                startDate.setFullYear(startDate.getFullYear() - 1);
+                break;
+            case 'last_five_years':
+                startDate = new Date();
+                startDate.setFullYear(startDate.getFullYear() - 5);
+                break;
+            default:
+                if (selectedFilter.startsWith('year_')) {
+                    const year = selectedFilter.split('_')[1];
+                    startDate = new Date(`${year}-01-01`);
+                } else {
+                    startDate = null;
+                }
+                break;
+        }
+
+        // Filter the data based on the calculated start date
+        if (startDate) {
+            filteredData = historyData.filter(record => new Date(record.timestamp) >= startDate);
+        }
+
+        // Display the data or a no data message
+        if (filteredData.length > 0) {
+            tableBody.innerHTML = '';
+            filteredData.forEach(record => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${record.timestamp}</td>
+                    <td>${record.open}</td>
+                    <td>${record.high}</td>
+                    <td>${record.low}</td>
+                    <td>${record.close}</td>
+                    <td>${record.volume}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+            noDataMessage.style.display = 'none';
+        } else {
+            noDataMessage.style.display = 'block';
+        }
+    }
+
+    // Initial population of the table
+    filterByRange();
+</script>
+{% endblock %}

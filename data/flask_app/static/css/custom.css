@@ -1,0 +1,418 @@
+/* General Styling */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+header,
+nav,
+main {
+    max-width: 1000px;
+    margin: auto;
+    padding: 20px;
+}
+
+header {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 0;
+    text-align: center;
+}
+
+nav {
+    background-color: #f8f9fa;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #007bff;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+nav a {
+    margin: 0;
+    padding: 8px 12px;
+    text-decoration: none;
+    color: #007bff;
+    border: 1px solid #007bff;
+    border-radius: 4px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+nav a:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+h1 {
+    color: white;
+}
+
+h2 {
+    color: #007bff;
+}
+
+/* Form Styling */
+form {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+form p {
+    margin-bottom: 15px;
+}
+
+form input[type="text"],
+form input[type="password"],
+form select,
+form input[type="number"],
+form textarea {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+form input[type="submit"],
+form button[type="submit"] {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+}
+
+form input[type="submit"]:hover,
+form button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+.filter-container label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.filter-container select {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+/* Button Styling */
+.btn {
+    display: inline-block;
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+/* Layout and Table Styling */
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-top: 1px solid #ccc;
+    margin-top: 20px;
+}
+
+.button-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.transaction-tabs {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.transaction-tabs .btn {
+    margin: 0 10px;
+    padding: 10px 20px;
+}
+
+.balance-display {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.stock-history-table-container,
+.stock-table-container,
+.search-bar-container,
+.filter-container {
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.stock-history-table,
+.stock-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: auto;
+}
+
+.stock-history-table th,
+.stock-history-table td,
+.stock-table th,
+.stock-table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+}
+
+.stock-history-table th,
+.stock-table th {
+    background-color: #007bff;
+    color: white;
+}
+
+.stock-history-table tr:nth-child(even),
+.stock-table tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+.stock-history-table tr:hover,
+.stock-table tr:hover {
+    background-color: #e9ecef;
+}
+
+/* Search Bar Styling */
+.search-bar-container form {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.search-bar-container input[type="text"] {
+    width: 70%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px 0 0 4px;
+    border-right: none;
+}
+
+.search-bar-container input[type="submit"] {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: 1px solid #007bff;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+}
+
+.search-bar-container input[type="submit"]:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+/* Review and Shared List Styling */
+.review-details,
+.review-list {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.review-item {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #ffffff;
+}
+
+.review-item p {
+    margin-bottom: 10px;
+}
+
+.review-item strong {
+    color: #007bff;
+}
+
+.shared-list {
+    list-style: none;
+    padding: 0;
+}
+
+.shared-list li {
+    margin-bottom: 10px;
+}
+
+.shared-list-item {
+    display: block;
+    background-color: white;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #007bff;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.shared-list-item:hover {
+    background-color: #f8f9fa;
+    color: #0056b3;
+}
+
+.list-group {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.list-group-item {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.list-group-item a {
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
+    display: block;
+}
+
+.list-group-item a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+.list-group-item:first-child {
+    margin-top: 0;
+}
+
+.list-group-item:last-child {
+    margin-bottom: 0;
+}
+
+/* Friends List Table Styling */
+.friends-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+.friends-table th,
+.friends-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+.friends-table th {
+    background-color: #007bff;
+    color: white;
+}
+
+.friends-table tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+.friends-table tr:hover {
+    background-color: #e9ecef;
+}
+
+.friends-table td form {
+    margin: 0;
+}
+
+/* Page Title Styling */
+.page-title {
+    color: #007bff;
+    margin-bottom: 20px;
+}
+
+/* Section Title Styling */
+.section-title {
+    color: #007bff;
+    margin-top: 30px;
+    margin-bottom: 15px;
+}
+
+/* Table Container Styling */
+.table-container {
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Table Styling */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+.table th {
+    background-color: #007bff;
+    color: white;
+}
+
+.table tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+.table tr:hover {
+    background-color: #e9ecef;
+}
+
+/* Specific Table Styling for Stock Tables */
+.stock-table th,
+.stock-table td {
+    border: 1px solid #ccc;
+}
+
+.stock-table th {
+    background-color: #007bff;
+    color: white;
+}
+
+.stock-table tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+.stock-table tr:hover {
+    background-color: #e9ecef;
+}

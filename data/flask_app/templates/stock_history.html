@@ -1,0 +1,33 @@
+<!-- stock_history.html -->
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Select a Stock to View History</h2>
+    <form method="post">
+        {{ form.hidden_tag() }}
+        <div>
+            {{ form.stock_symbol.label }}<br>
+            {{ form.stock_symbol() }}
+        </div>
+        <div>
+            {{ form.submit() }}
+        </div>
+    </form>
+
+    <!-- Form for future prediction -->
+    <h2>Select a Stock for Future Prediction</h2>
+    <form method="post" action="{{ url_for('stock_future_prediction_form') }}">
+        <div>
+            <label for="future_stock_symbol">Select Stock Symbol:</label>
+            <select name="future_stock_symbol" id="future_stock_symbol">
+                <option value="">Select...</option>
+                {% for stock in stocks %}
+                    <option value="{{ stock.symbol }}">{{ stock.name if stock.name == stock.symbol else stock.name ~ ' - ' ~ stock.symbol }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <button type="submit" class="btn">View Future Prediction</button>
+        </div>
+    </form>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Remove Stock{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+    <h2>Remove Stock from Stock List</h2>
+    <form method="post" action="{{ url_for('remove_stock', stock_list_id=stock_list_id) }}">
+        <div class="form-group">
+            <label for="stock_symbol">Stock Symbol:</label>
+            <select name="stock_symbol" id="stock_symbol" class="form-control" required>
+                <option value="">Select a Stock</option>
+                {% for item in stock_list_stocks %}
+                    <option value="{{ item.symbol }}">
+                        {{ item.symbol }} - {{ item.name }}: {{ item.volume }} shares
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="volume">Volume to Remove:</label>
+            <input type="number" name="volume" id="volume" class="form-control" required min="1">
+        </div>
+        <button type="submit" class="btn">Remove Stock</button>
+    </form>
+    <div class="button-container">
+        <a href="{{ url_for('stocklists') }}" class="btn">Back to Stock Lists</a>
+    </div>
+</div>
+{% endblock %}
